@@ -133,16 +133,6 @@ export function CallRequest() {
                 @motion4frames
               </a>
             </p>
-
-            <p>
-              Email:{" "}
-              <a
-                href="mailto:hello@motion4frames.no"
-                className="rounded-full border border-transparent px-2 py-1 text-white transition hover:border-[#E10600] hover:text-[#E10600]"
-              >
-                hello@motion4frames.no
-              </a>
-            </p>
           </div>
 
           {formState === "success" && (

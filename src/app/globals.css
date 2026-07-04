@@ -2,10 +2,8 @@
 
 :root {
   --background: #050505;
-  --panel: #111111;
-  --text: #f5f5f5;
-  --muted: #d9d9d9;
-  --red: #e10600;
+  --foreground: #ffffff;
+  --accent: #e10600;
 }
 
 * {
@@ -14,19 +12,33 @@
 
 html {
   scroll-behavior: smooth;
+  background: var(--background);
 }
 
 body {
   margin: 0;
   background: var(--background);
-  color: var(--text);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 ::selection {
-  background: var(--red);
+  background: var(--accent);
   color: white;
 }
 
 img {
-  user-select: none;
+  max-width: 100%;
+}
+
+a,
+button,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea {
+  color-scheme: dark;
 }

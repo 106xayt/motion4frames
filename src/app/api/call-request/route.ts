@@ -2,14 +2,12 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 type CallRequestPayload = {
-  name?: string;
-  business?: string;
+  brandName?: string;
   phone?: string;
   email?: string;
-  website?: string;
-  instagram?: string;
-  productService?: string;
-  message?: string;
+  websiteOrInstagram?: string;
+  productFocus?: string;
+  desiredFeeling?: string;
 };
 
 function clean(value: unknown) {
@@ -32,15 +30,11 @@ export async function POST(request: Request) {
     const to = process.env.CALL_REQUEST_TO;
     const from = process.env.CALL_REQUEST_FROM;
 
-    console.log("CALL_REQUEST_FROM:", from);
-    console.log("CALL_REQUEST_TO:", to);
-    console.log("RESEND KEY EXISTS:", Boolean(resendApiKey));
-
     if (!resendApiKey || !to || !from) {
       return NextResponse.json(
         {
           error:
-            "Missing environment variables. Check RESEND_API_KEY, CALL_REQUEST_TO and CALL_REQUEST_FROM in .env.local.",
+            "Missing environment variables. Check RESEND_API_KEY, CALL_REQUEST_TO and CALL_REQUEST_FROM.",
         },
         { status: 500 },
       );
@@ -48,18 +42,26 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as CallRequestPayload;
 
-    const name = clean(body.name);
-    const business = clean(body.business);
+    const brandName = clean(body.brandName);
     const phone = clean(body.phone);
     const email = clean(body.email);
-    const website = clean(body.website);
-    const instagram = clean(body.instagram);
-    const productService = clean(body.productService);
-    const message = clean(body.message);
+    const websiteOrInstagram = clean(body.websiteOrInstagram);
+    const productFocus = clean(body.productFocus);
+    const desiredFeeling = clean(body.desiredFeeling);
 
-    if (!name || !business || !phone || !email) {
+    if (
+      !brandName ||
+      !phone ||
+      !email ||
+      !websiteOrInstagram ||
+      !productFocus ||
+      !desiredFeeling
+    ) {
       return NextResponse.json(
-        { error: "Name, business, phone and email are required." },
+        {
+          error:
+            "Brand name, phone, email, website/Instagram, product focus and desired feeling are required.",
+        },
         { status: 400 },
       );
     }
@@ -70,7 +72,7 @@ export async function POST(request: Request) {
       from,
       to,
       replyTo: email,
-      subject: `New M4F call request from ${business}`,
+      subject: `New M4F call request from ${brandName}`,
       html: `
         <div style="font-family: Arial, sans-serif; background: #050505; color: #f5f5f5; padding: 32px;">
           <div style="max-width: 640px; margin: 0 auto; border: 1px solid #222; padding: 24px; border-radius: 18px; background: #111111;">
@@ -82,17 +84,17 @@ export async function POST(request: Request) {
               New Call Request
             </h1>
 
-            <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-            <p><strong>Business:</strong> ${escapeHtml(business)}</p>
+            <p><strong>Brand name:</strong> ${escapeHtml(brandName)}</p>
             <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
             <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-            <p><strong>Website:</strong> ${escapeHtml(website || "Not provided")}</p>
-            <p><strong>Instagram:</strong> ${escapeHtml(instagram || "Not provided")}</p>
-            <p><strong>Product / Service:</strong> ${escapeHtml(productService || "Not provided")}</p>
+            <p><strong>Website or Instagram:</strong> ${escapeHtml(websiteOrInstagram)}</p>
+            <p><strong>Product focus:</strong> ${escapeHtml(productFocus)}</p>
+            <p><strong>Desired feeling:</strong> ${escapeHtml(desiredFeeling)}</p>
 
             <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #222;">
-              <p style="margin-bottom: 8px;"><strong>Message:</strong></p>
-              <p style="white-space: pre-line; color: #d9d9d9;">${escapeHtml(message || "No message provided.")}</p>
+              <p style="margin: 0; color: #aaa;">
+                This request came from the Motion4Frames website.
+              </p>
             </div>
           </div>
         </div>
@@ -100,16 +102,14 @@ export async function POST(request: Request) {
       text: `
 New Call Request
 
-Name: ${name}
-Business: ${business}
+Brand name: ${brandName}
 Phone: ${phone}
 Email: ${email}
-Website: ${website || "Not provided"}
-Instagram: ${instagram || "Not provided"}
-Product / Service: ${productService || "Not provided"}
+Website or Instagram: ${websiteOrInstagram}
+Product focus: ${productFocus}
+Desired feeling: ${desiredFeeling}
 
-Message:
-${message || "No message provided."}
+This request came from the Motion4Frames website.
       `,
     });
 
@@ -121,8 +121,6 @@ ${message || "No message provided."}
         { status: 500 },
       );
     }
-
-    console.log("RESEND SUCCESS:", data);
 
     return NextResponse.json({ success: true, data });
   } catch (error) {

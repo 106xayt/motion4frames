@@ -78,7 +78,7 @@ export function Hero() {
     />
 
     <ImageCard
-      src="/images/redbull/redbull5.jpg"
+      src="/images/redbull/redbull6.jpg"
       alt="Red Bull campaign visual"
       eyebrow="Launch asset"
       label="Social-ready product visual"

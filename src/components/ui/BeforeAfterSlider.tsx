@@ -5,11 +5,17 @@ import { useRef, useState } from "react";
 type BeforeAfterSliderProps = {
   beforeImage: string;
   afterImage: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+  alt?: string;
 };
 
 export function BeforeAfterSlider({
   beforeImage,
   afterImage,
+  beforeLabel = "Før",
+  afterLabel = "Etter",
+  alt = "Bil",
 }: BeforeAfterSliderProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState(50);
@@ -37,7 +43,7 @@ export function BeforeAfterSlider({
     >
       <img
         src={afterImage}
-        alt="Cinematic product presentation"
+        alt={`${alt} – ${afterLabel}`}
         className="absolute inset-0 h-full w-full object-cover object-center"
         draggable={false}
       />
@@ -50,7 +56,7 @@ export function BeforeAfterSlider({
       >
         <img
           src={beforeImage}
-          alt="Ordinary product presentation"
+          alt={`${alt} – ${beforeLabel}`}
           className="absolute inset-0 h-full w-full object-cover object-center"
           draggable={false}
         />
@@ -63,7 +69,7 @@ export function BeforeAfterSlider({
 
       <button
         type="button"
-        aria-label="Drag to reveal transformation"
+        aria-label="Dra for å sammenligne"
         className="absolute top-1/2 z-30 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-[#E10600] bg-black/90 text-xl text-[#E10600] shadow-[0_0_35px_rgba(225,6,0,0.45)] transition hover:bg-[#E10600] hover:text-white hover:shadow-[0_0_50px_rgba(225,6,0,0.65)]"
         style={{ left: `${position}%` }}
       >
@@ -71,32 +77,13 @@ export function BeforeAfterSlider({
       </button>
 
       <div className="absolute left-4 top-4 z-30 rounded-full border border-white/10 bg-black/70 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-white/75 backdrop-blur transition hover:border-[#E10600] hover:text-[#E10600]">
-        Before
+        {beforeLabel}
       </div>
 
       <div className="absolute right-4 top-4 z-30 rounded-full border border-white/10 bg-black/70 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-white/75 backdrop-blur transition hover:border-[#E10600] hover:text-[#E10600]">
-        After
+        {afterLabel}
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 z-30 grid grid-cols-2 border-t border-white/10 bg-black/80 backdrop-blur">
-        <div className="border-r border-white/10 p-4 transition hover:bg-[#E10600]/10 md:p-6">
-          <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">
-            Raw. Flat.
-          </p>
-          <p className="mt-1 text-sm font-medium uppercase text-[#E10600]">
-            Product.
-          </p>
-        </div>
-
-        <div className="p-4 text-right transition hover:bg-[#E10600]/10 md:p-6">
-          <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">
-            Framed. Cinematic.
-          </p>
-          <p className="mt-1 text-sm font-medium uppercase text-[#E10600]">
-            Attention.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

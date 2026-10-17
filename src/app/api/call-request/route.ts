@@ -1,18 +1,20 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-type CallRequestPayload = {
-  brandName?: string;
-  phone?: string;
-  email?: string;
-  websiteOrInstagram?: string;
-  productFocus?: string;
-  desiredFeeling?: string;
+const FIELDS = ["name", "company", "contact", "need", "message", "source"] as const;
+type Field = (typeof FIELDS)[number];
+
+const LABELS: Record<Field, string> = {
+  name: "Navn",
+  company: "Bedrift",
+  contact: "Telefon / e-post",
+  need: "Behov",
+  message: "Melding",
+  source: "Skjema",
 };
 
 function clean(value: unknown) {
-  if (typeof value !== "string") return "";
-  return value.trim();
+  return typeof value === "string" ? value.trim().slice(0, 2000) : "";
 }
 
 function escapeHtml(value: string) {
@@ -31,109 +33,44 @@ export async function POST(request: Request) {
     const from = process.env.CALL_REQUEST_FROM;
 
     if (!resendApiKey || !to || !from) {
-      return NextResponse.json(
-        {
-          error:
-            "Missing environment variables. Check RESEND_API_KEY, CALL_REQUEST_TO and CALL_REQUEST_FROM.",
-        },
-        { status: 500 },
-      );
+      console.error("Missing RESEND_API_KEY, CALL_REQUEST_TO or CALL_REQUEST_FROM");
+      return NextResponse.json({ error: "Skjemaet er ikke satt opp riktig. Prøv igjen senere." }, { status: 500 });
     }
 
-    const body = (await request.json()) as CallRequestPayload;
+    const body = (await request.json()) as Partial<Record<Field, unknown>>;
+    const data = Object.fromEntries(FIELDS.map((f) => [f, clean(body[f])])) as Record<Field, string>;
 
-    const brandName = clean(body.brandName);
-    const phone = clean(body.phone);
-    const email = clean(body.email);
-    const websiteOrInstagram = clean(body.websiteOrInstagram);
-    const productFocus = clean(body.productFocus);
-    const desiredFeeling = clean(body.desiredFeeling);
-
-    if (
-      !brandName ||
-      !phone ||
-      !email ||
-      !websiteOrInstagram ||
-      !productFocus ||
-      !desiredFeeling
-    ) {
+    if (!data.name || !data.contact || !data.need) {
       return NextResponse.json(
-        {
-          error:
-            "Brand name, phone, email, website/Instagram, product focus and desired feeling are required.",
-        },
+        { error: "Fyll inn navn, telefon eller e-post, og hva du trenger hjelp med." },
         { status: 400 },
       );
     }
 
-    const resend = new Resend(resendApiKey);
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contact);
+    const rows = FIELDS.filter((f) => data[f]);
 
-    const { data, error } = await resend.emails.send({
+    const { error } = await new Resend(resendApiKey).emails.send({
       from,
       to,
-      replyTo: email,
-      subject: `New M4F call request from ${brandName}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; background: #050505; color: #f5f5f5; padding: 32px;">
-          <div style="max-width: 640px; margin: 0 auto; border: 1px solid #222; padding: 24px; border-radius: 18px; background: #111111;">
-            <p style="color: #E10600; letter-spacing: 4px; text-transform: uppercase; font-size: 12px; margin: 0 0 16px;">
-              MOTION4FRAMES
-            </p>
-
-            <h1 style="margin: 0 0 24px; font-size: 28px;">
-              New Call Request
-            </h1>
-
-            <p><strong>Brand name:</strong> ${escapeHtml(brandName)}</p>
-            <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
-            <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-            <p><strong>Website or Instagram:</strong> ${escapeHtml(websiteOrInstagram)}</p>
-            <p><strong>Product focus:</strong> ${escapeHtml(productFocus)}</p>
-            <p><strong>Desired feeling:</strong> ${escapeHtml(desiredFeeling)}</p>
-
-            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #222;">
-              <p style="margin: 0; color: #aaa;">
-                This request came from the Motion4Frames website.
-              </p>
-            </div>
-          </div>
-        </div>
-      `,
-      text: `
-New Call Request
-
-Brand name: ${brandName}
-Phone: ${phone}
-Email: ${email}
-Website or Instagram: ${websiteOrInstagram}
-Product focus: ${productFocus}
-Desired feeling: ${desiredFeeling}
-
-This request came from the Motion4Frames website.
-      `,
+      ...(isEmail ? { replyTo: data.contact } : {}),
+      subject: `Ny henvendelse (${data.need}) fra ${data.name}${data.company ? `, ${data.company}` : ""}`,
+      html: `<div style="font-family:Arial,sans-serif;padding:24px">
+        <p style="color:#E10600;letter-spacing:4px;font-size:12px">MOTION4FRAMES</p>
+        <h1 style="font-size:22px">Ny henvendelse</h1>
+        ${rows.map((f) => `<p><strong>${LABELS[f]}:</strong> ${escapeHtml(data[f]).replaceAll("\n", "<br>")}</p>`).join("")}
+      </div>`,
+      text: rows.map((f) => `${LABELS[f]}: ${data[f]}`).join("\n"),
     });
 
     if (error) {
       console.error("RESEND ERROR:", error);
-
-      return NextResponse.json(
-        { error: error.message || "Resend failed to send the email." },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: "Kunne ikke sende. Prøv igjen senere." }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("CALL REQUEST ERROR:", error);
-
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Something went wrong. Please try again.",
-      },
-      { status: 500 },
-    );
+    console.error("CONTACT ERROR:", error);
+    return NextResponse.json({ error: "Noe gikk galt. Prøv igjen." }, { status: 500 });
   }
 }

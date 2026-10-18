@@ -52,10 +52,10 @@ export const featuredCase = {
   video: "/media/video/prime-ferrari.mp4",
   poster: "/media/img/hero-mobile-poster.jpg",
   results: [
-    { src: "/media/img/case-ferrari-1.jpg", alt: "Ferrari 458 Italia på høstvei i skogen" },
-    { src: "/media/img/case-ferrari-2.jpg", alt: "Ferrari 458 Italia under nordlys" },
-    { src: "/media/img/case-ferrari-3.jpg", alt: "Ferrari 458 Italia i Tokyo om natten" },
-    { src: "/media/img/case-ferrari-4.jpg", alt: "Ferrari 458 Italia på vinterveg" },
+    { src: "/media/img/case-ferrari-1.jpg", alt: "Ferrari 458 Italia på snødekt vei i fjellet" },
+    { src: "/media/img/case-ferrari-2.jpg", alt: "Ferrari 458 Italia i snøvær om kvelden" },
+    { src: "/media/img/case-ferrari-3.jpg", alt: "Ferrari 458 Italia i snøen" },
+    { src: "/media/img/case-ferrari-4.jpg", alt: "Ferrari 458 Italia på vinterveg i skumringen" },
   ],
 };
 

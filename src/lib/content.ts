@@ -54,7 +54,7 @@ export const featuredCase = {
   results: [
     { src: "/media/img/case-ferrari-1.jpg", alt: "Ferrari 458 Italia på snødekt vei i fjellet" },
     { src: "/media/img/case-ferrari-2.jpg", alt: "Ferrari 458 Italia i snøvær om kvelden" },
-    { src: "/media/img/case-ferrari-3.jpg", alt: "Ferrari 458 Italia i snøen" },
+    { src: "/media/img/case-ferrari-3.jpg", alt: "Ferrari 458 Italia sett ovenfra på snødekt bro" },
     { src: "/media/img/case-ferrari-4.jpg", alt: "Ferrari 458 Italia på vinterveg i skumringen" },
   ],
 };

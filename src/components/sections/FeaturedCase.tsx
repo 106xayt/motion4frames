@@ -8,9 +8,11 @@ export function FeaturedCase() {
       <div className="grid gap-10 md:grid-cols-[minmax(0,360px)_1fr] md:items-start">
         <div className="relative mx-auto aspect-[9/16] w-full max-w-[360px] overflow-hidden rounded-[2rem] border border-white/10">
           <LoopVideo src={c.video} poster={c.poster} />
-          <div className="absolute left-4 top-4">
-            <TagBadge tag={c.tag} />
-          </div>
+          {c.tag && (
+            <div className="absolute left-4 top-4">
+              <TagBadge tag={c.tag} />
+            </div>
+          )}
         </div>
 
         <div>

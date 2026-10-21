@@ -41,13 +41,14 @@ export const intro = {
 };
 
 export const featuredCase = {
-  label: "Konsept",
-  tag: "AI-konsept" as Tag,
+  label: "Utvalgt prosjekt",
+  tag: null as Tag | null, // f.eks. "Kundeoppdrag"; null skjuler merkelappen
   client: "Prime Norge",
   title: "Prime × Motion Limited",
   car: "Ferrari 458 Italia",
-  description: "Reklame for Prime Norge og deres Ferrari 458 Italia.",
-  deliverables: ["Reklamefilm", "Stillbilder"],
+  description:
+    "Filmatisk reklameinnhold for Prime Norge, med deres Ferrari 458 Italia i hovedrollen. Lys, miljø og bevegelse er bygget for å gi bilen den eksklusive følelsen den fortjener.",
+  deliverables: ["Reklamefilm", "Stillbilder", "Sosiale medier"],
   video: "/media/video/prime-ferrari.mp4",
   poster: "/media/img/hero-mobile-poster.jpg",
   results: [

@@ -43,12 +43,11 @@ export const intro = {
 export const featuredCase = {
   label: "Konsept",
   tag: "AI-konsept" as Tag,
-  client: "Eget konsept",
+  client: "Prime Norge",
   title: "Prime × Motion Limited",
   car: "Ferrari 458 Italia",
-  description:
-    "Et kampanjekonsept for Ferrari 458 Italia, laget uten innspillingsdag. Filmen og bildene er skapt med AI og kreativ etterbehandling for å vise hvordan bilen kan presenteres i ulike miljøer.",
-  deliverables: ["Konseptfilm", "Stillbilder", "Sosiale medier"],
+  description: "Reklame for Prime Norge og deres Ferrari 458 Italia.",
+  deliverables: ["Reklamefilm", "Stillbilder"],
   video: "/media/video/prime-ferrari.mp4",
   poster: "/media/img/hero-mobile-poster.jpg",
   results: [
